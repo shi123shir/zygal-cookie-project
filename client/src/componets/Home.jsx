@@ -6,52 +6,60 @@
   export const Home = ({ onLogout }) => {
     const [inp1, setInp1] = useState("");
     const [inp2, setInp2] = useState("");
+    const [searchButton,setsearchButton] = useState(false)
     const [searchedResult, setSearchedResult] = useState([]);
     const navigate = useNavigate();
 
-    function handleInput1(e) {
+    function handleinp1(e) {
       setInp1(e.target.value);
     }
 
-    function handleInput2(e) {
+    function handleInp2(e) {
       setInp2(e.target.value);
     }
    
+    function handleSearch (){
+        setsearchButton(true);
+    }
+
 
     useEffect(() =>{
       const fetchData = async () => {
         try {
-          const response = await axios("https://api.example.com/data");
-         
+          const response = await axios(`https://localhost:5000/search/${inp2}`);
           setSearchedResult(response.data);
+          searchButton(false)
         } catch (error) {
           console.error("Error fetching data:", error.message);
+          searchButton(false)
         }
       };
     fetchData();
 
-    },[inp2])
+    },[searchButton])
 
 
     return (
       <div>
         <h2>Home</h2>
-        <div >
+        <div>
           <h5>Submit text message</h5>
-          <input type="text" value={inp1} onChange={""} />
+          <input type="text" value={inp1} onChange={handleinp1} />
         </div>
         <div>
           <button onClick={""}>Submit</button>
         </div>
         <div>
           <h5>Search message</h5>
-          <input type="text" value={inp2} onChange={""} />
+          <input type="text" value={inp2} onChange={handleInp2} />
         </div>
-        <div className="login">
-          <button onClick={""}>Search</button>
+        <div>
+          <button onClick={handleSearch}>Search</button>
         </div>
-        <div className="login">
-          <input type="text" value={searchedResult} readOnly />
+        <div>
+          {searchedResult.map((item, index) => (
+            <input key={index} value={item} readOnly />
+          ))}
         </div>
         <div>
           <button onClick={""}>ClearAll</button>
