@@ -26,7 +26,10 @@ const UserLogin = () => {
       
       }
     } catch (err) {
+      
       setError("Invalid credentials");
+      setEmail("")
+      setPassword("")
     }
   };
 

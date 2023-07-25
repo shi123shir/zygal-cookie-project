@@ -1,9 +1,10 @@
   import React, { useState,useEffect } from "react";
  import axios from "axios";
   import { useNavigate } from "react-router-dom";
+  import Cookies from "js-cookie";
 
 
-  export const Home = ({ onLogout }) => {
+  export const Home = () => {
     const [inp1, setInp1] = useState("");
     const [inp2, setInp2] = useState("");
     const [searchButton,setsearchButton] = useState(false)
@@ -13,7 +14,6 @@
     function handleinp1(e) {
       setInp1(e.target.value);
     }
-
     function handleInp2(e) {
       setInp2(e.target.value);
     }
@@ -22,21 +22,35 @@
         setsearchButton(true);
     }
 
+     async function submitMessage (){
+    
+       let res = await axios(`https://localhost:5000//message`,{inp1})
+           Cookies.set("message",res.data)
+         
+    }
 
-    useEffect(() =>{
+    function handelClear (){
+      Cookies.remove("message")
+    }
+    function handleLogOut (){
+      Cookies.remove("token")
+      navigate("/")
+    }
+
+
+    useEffect(() => {
       const fetchData = async () => {
         try {
-          const response = await axios(`https://localhost:5000/search/${inp2}`);
+          const response = await axios.get(`https://localhost:5000/search/${inp2}`);
           setSearchedResult(response.data);
-          searchButton(false)
+          searchButton(false);
         } catch (error) {
           console.error("Error fetching data:", error.message);
-          searchButton(false)
+          searchButton(false);
         }
       };
-    fetchData();
-
-    },[searchButton])
+      fetchData();
+    }, [searchButton]);
 
 
     return (
@@ -47,7 +61,7 @@
           <input type="text" value={inp1} onChange={handleinp1} />
         </div>
         <div>
-          <button onClick={""}>Submit</button>
+          <button onClick={submitMessage}>Submit</button>
         </div>
         <div>
           <h5>Search message</h5>
@@ -62,8 +76,8 @@
           ))}
         </div>
         <div>
-          <button onClick={""}>ClearAll</button>
-          <button onClick={""}>LogOut</button>
+          <button onClick={handelClear}>ClearAll</button>
+          <button onClick={handleLogOut}>LogOut</button>
         </div>
       </div>
     );
