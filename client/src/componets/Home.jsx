@@ -1,4 +1,4 @@
-  import React, { useState,useEffect } from "react";
+  import React, { useState } from "react";
  import axios from "axios";
   import { useNavigate } from "react-router-dom";
   import Cookies from "js-cookie";
@@ -7,7 +7,7 @@
   export const Home = () => {
     const [inp1, setInp1] = useState("");
     const [inp2, setInp2] = useState("");
-    const [searchButton,setsearchButton] = useState(false)
+    const [loding,setLoding] = useState(false)
     const [searchedResult, setSearchedResult] = useState([]);
     const navigate = useNavigate();
 
@@ -18,14 +18,37 @@
       setInp2(e.target.value);
     }
    
-    function handleSearch (){
-        setsearchButton(true);
-    }
-
+   
      async function submitMessage (){
-    
-       let res = await axios(`https://localhost:5000//message`,{inp1})
-           Cookies.set("message",res.data)
+      try {
+        let cookie1Name = "token"
+        const cookie1Value = Cookies.get(cookie1Name);
+        console.log(cookie1Value)
+        const  cookie2Name = "message"
+        const cookie2Value = Cookies.get(cookie2Name)
+          const headers = {
+            Cookie: `${cookie1Name}=${cookie1Value}; ${cookie2Name}=${cookie2Value}`,
+          };
+        
+        const response = await axios.post(
+          `http://localhost:5000/message`,
+          {
+            data:inp1,
+          },
+          { headers: headers, withCredentials: true }
+        );
+        let fulldata = await response.data;
+
+        // console.log(fulldata)
+
+        Cookies.set("message",fulldata)
+        setInp1("");
+      } catch (error) {
+        console.log(error.message)
+      }
+       
+          //  Cookies.set("message",res.data)
+
          
     }
 
@@ -38,19 +61,19 @@
     }
 
 
-    useEffect(() => {
+    
       const fetchData = async () => {
         try {
+          setLoding(true)
           const response = await axios.get(`https://localhost:5000/search/${inp2}`);
           setSearchedResult(response.data);
-          searchButton(false);
+          setLoding(false);
         } catch (error) {
           console.error("Error fetching data:", error.message);
-          searchButton(false);
+          setLoding(false);
         }
       };
-      fetchData();
-    }, [searchButton]);
+      
 
 
     return (
@@ -68,16 +91,21 @@
           <input type="text" value={inp2} onChange={handleInp2} />
         </div>
         <div>
-          <button onClick={handleSearch}>Search</button>
+          <button onClick={fetchData}>Search</button>
         </div>
         <div>
-          {searchedResult.map((item, index) => (
-            <input key={index} value={item} readOnly />
-          ))}
+          {loding ? (
+            searchedResult.map((item, index) => (
+              <input key={index} value={item} readOnly />
+            ))
+          ) : (
+            <input type="text" value={"not data found"} readOnly />
+          )}
         </div>
         <div>
           <button onClick={handelClear}>ClearAll</button>
-          <button onClick={handleLogOut}>LogOut</button>
+          <br />
+          <button onClick={handleLogOut} >LogOut</button>
         </div>
       </div>
     );
