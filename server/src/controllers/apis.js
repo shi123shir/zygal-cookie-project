@@ -22,7 +22,7 @@ const userLogin = async(req,res) =>{
 
         if (user) {
 
-          const token = await jwt.sign({ email_id }, "secretKey", { expiresIn: "1h" });
+          const token =  jwt.sign({ email_id }, "secretKey", { expiresIn: "1h" });
 
           res.cookie("token", token);
           res.send({ token});
@@ -40,26 +40,28 @@ const userLogin = async(req,res) =>{
 const createMessage = async (req,res)=>{
     try {
         const {data} = req.body
+        console.log(req.cookies.message)
         if(!req.cookies.message){
-            const arr = [data]
-            const sing =  JSON.stringify(arr)
-            res.cookie("message",sing)
-            res.send(sing)
+         const arr = [data];
+         const sing = JSON.stringify(arr);
+         res.cookie("message", sing);
+         res.send(sing);
         } else{
         const parsedVal =  await JSON.parse(req.cookies.message);
         if(parsedVal.includes(data)){
             return res.status(400).send({message:"this message is already exists"})
         }
-        const update =    [...parsedVal,data]
+        const update = [...parsedVal,data]
         const finalval =  JSON.stringify(update)
         const finalForSure = decodeURIComponent(finalval)
        res.cookie("message", finalForSure);
    
         res.status(200).send(finalval)
         }
-        console.log(req.cookies.message)
+        
     } catch (error) {
         res.status(500).send(error.message)
+        console.error(error.message)
     }
 }
 

@@ -1,13 +1,23 @@
 
-const checkTokenMiddleware = (req, res, next) => {
-  const tokenCookie = req.cookies.token; 
+// const checkTokenMiddleware = (req, res, next) => {
+//   try {
+//     const tokenCookie = req.cookies.token; 
+//      if (tokenCookie) {
+//        next();
+//      } else {
+//        res.status(400).send("please login");
+//      }
+//   } catch (error) {
+//     res.status(500).send(error.message)
+//   }
+// };
 
-  if (tokenCookie) {
-    next()
-  } else {
-    res.status(400).send("please login")
-  }
-};
+
+// module.exports = {checkTokenMiddleware};
 
 
-module.exports = {checkTokenMiddleware};
+
+
+
+
+
